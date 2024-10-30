@@ -1,0 +1,38 @@
+services:
+
+  Allam_battle_backend:
+    image: poetic_debate
+    build:
+      dockerfile: ./backend/app/servers/poetic_debate/Dockerfile
+    ports:
+      - "7000:8000"
+    command: >
+      sh -c "cd /app/backend/app/servers/poetic_debate && python3 server.py"
+    networks:
+      - Allam_network
+      
+  Allam_generation_backend:
+    image: poet_generation
+    build:
+      dockerfile: ./backend/app/servers/poetry_generation/Dockerfile
+    ports:
+      - "7001:8000"
+    command: >
+      sh -c "cd /app/backend/app/servers/poetry_generation && python3 server.py"
+    networks:
+      - Allam_network
+
+  Allam_analysis_backend:
+    image: poetic_analysis
+    build:
+      dockerfile: ./backend/app/servers/poetry_analysis/Dockerfile
+    ports:
+      - "7002:8000"
+    command: >
+             sh -c "cd /app/backend/app/servers/poetry_analysis && python3 server.py"
+    networks:
+      - Allam_network
+
+networks:
+  Allam_network:
+    driver: bridge
