@@ -5,7 +5,6 @@ This project is designed to facilitate building and running a Dockerized environ
 ## Features
 - **Automated Setup**: `start.sh` handles the creation of necessary directories and downloads the required SentenceTransformer model.
 - **Dockerized Environment**: Easily build and run the project with Docker Compose.
-- **Multilingual Model**: Utilizes the `paraphrase-multilingual-mpnet-base-v2` from the SentenceTransformers library for sentence embedding.
 
 ## Prerequisites
 Before running this project, ensure you have the following installed:
@@ -18,8 +17,8 @@ Before running this project, ensure you have the following installed:
 1. **Clone the Repository:**
 
     ```bash
-    git clone <your-repository-url>
-    cd <your-repository-name>
+    git clone Allam-challenge-2024
+    cd Allam-challenge-2024
     ```
 
 2. **Make the `start.sh` Script Executable:**
