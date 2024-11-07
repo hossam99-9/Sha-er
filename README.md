@@ -2,6 +2,8 @@
 
 This project demonstrates the capabilities of SDAIA's Arabic language model, **Allam**, in understanding and reasoning in Arabic through an interactive poetry showcase. The challenge highlights Allam's ability to mimic Arabic poets, analyze verses, and engage in poetic debates, showcasing advanced natural language processing in Arabic.
 
+**🌐 Live Deployment**: You can explore the project at [allam.hpc.brightskiesinc.com](https://allam.hpc.brightskiesinc.com)
+
 ## 📝 Project Overview
 
 The application offers three main features centered around Arabic poetry:
@@ -63,13 +65,4 @@ Before running this project, make sure you have:
     npm ci
     npm run start
     ```
-
-5. **Optional: Manually Start Docker Compose**:
-
-    If you prefer to control Docker Compose yourself, use:
-
-    ```bash
-    docker compose up --build
-    ```
-
 ---
