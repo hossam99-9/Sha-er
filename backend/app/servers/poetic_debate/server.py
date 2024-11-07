@@ -40,14 +40,14 @@ with open(filename, mode="w", newline="") as file:
 # TODO: Tune temperatures
 commentator_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 1500,
-    GenTextParamsMetaNames.DECODING_METHOD: "greedy",
-		GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+    GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+    GenTextParamsMetaNames.TEMPERATURE: 0.3,
 }
 
 summarizer_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 1500,
-    GenTextParamsMetaNames.DECODING_METHOD: "greedy",
-		GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+    GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+    GenTextParamsMetaNames.TEMPERATURE: 0.3,
 }
 
 commentator_llm = LLMModel(commentator_parameters)
@@ -59,18 +59,17 @@ judge_agent = PoetryJudgeAgent(commentator_llm_model=commentator_llm,
                                summarizer_llm_model=summarizer_llm,)
                                
 # Define LLMs
-# TODO: Tune temperature
 retriever_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 1500,
     GenTextParamsMetaNames.DECODING_METHOD: "greedy",
-		GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+	GenTextParamsMetaNames.REPETITION_PENALTY: 1,
     GenTextParamsMetaNames.TEMPERATURE: 0.3,
 }
 
 generator_parameters = {
-    GenTextParamsMetaNames.MAX_NEW_TOKENS: 1500,
-    GenTextParamsMetaNames.DECODING_METHOD: "greedy",
-		GenTextParamsMetaNames.REPETITION_PENALTY: 1,
+    GenTextParamsMetaNames.MAX_NEW_TOKENS: 120,
+    GenTextParamsMetaNames.REPETITION_PENALTY: 1.1,
+    GenTextParamsMetaNames.TEMPERATURE: 0.4,
 }
 
 retriever_llm = LLMModel(retriever_parameters)
@@ -85,7 +84,7 @@ generator_agent = PoetryGenerationAgent(generator_llm_model=generator_llm,
                                         themes_list=THEMES,
                                         poetry_database_path = Config.ASHAAR_DATA_PATH)
 # WebSocket endpoint
-@app.websocket("/ws/battle")
+@app.websocket("/wss/battle")
 async def websocket_endpoint(
     websocket: WebSocket,
     poet1: str = Query(...),

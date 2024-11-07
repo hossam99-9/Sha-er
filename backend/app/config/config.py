@@ -13,7 +13,7 @@ class Config:
     # Other configuration settings
     LOGGER_LEVEL = 2
     # Use this to generate metrics for evaluating Allam model itself against gpt-4
-    EVALUATION_MODE = True
+    EVALUATION_MODE = False
 
     OPENAI_API_KEY = "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"
     LANGCHAIN_API_KEY = ""

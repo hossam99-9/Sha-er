@@ -26,7 +26,6 @@ index_theme = load_embeddings(path=Config.THEME_EMBEDDINGS_PATH)
 index_poet = load_embeddings(path=Config.POET_EMBEDDINGS_PATH)
 
 # Define LLMS
-# TODO: Tune temperature
 retriever_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 1500,
     GenTextParamsMetaNames.DECODING_METHOD: "greedy",
@@ -36,7 +35,8 @@ retriever_parameters = {
 
 generator_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 120,
-    GenTextParamsMetaNames.DECODING_METHOD: "greedy",
+    GenTextParamsMetaNames.REPETITION_PENALTY: 1.1,
+    GenTextParamsMetaNames.TEMPERATURE: 0.4,
 }
 
 retriever_llm = LLMModel(retriever_parameters)
@@ -51,7 +51,7 @@ generator_agent = PoetryGenerationAgent(generator_llm_model=generator_llm,
                                         themes_list=THEMES,
                                         poetry_database_path = Config.ASHAAR_DATA_PATH)
 # WebSocket endpoint
-@app.websocket("/ws/generate")
+@app.websocket("/wss/generate")
 async def websocket_endpoint(websocket: WebSocket,
                              prompt: str = Query(...)):
 

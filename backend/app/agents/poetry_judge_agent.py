@@ -96,12 +96,14 @@ The input block will always be a json string:
       return commentator_system, user_prompt
 
     def _prepare_summarizer_prompt(self, poet1, poet2, round_verses, round_scores, round_comments):
+      poet1_total_score = sum(round_scores["poet1"])
+      poet2_total_score = sum(round_scores["poet2"])
+
       summarizer_prompt = f"""
 <s> [INST]<<SYS>>
-انت محكم في مبارزة شعرية بين {poet1} و {poet2} تتمثل مهمتك في تقديم ملخص شامل ومفيد لكل جولة، يتضمن النقاط التي حصل عليها كل شاعر  و البيت الذي قام كل شاعر بتوليده في كل جولة وتعليقات حول الأداء في كل جولة. يُرجى تلخيص النتائج وتقديم نظرة عامة شاملة عن الأداء الإجمالي لكل شاعر، مع التأكيد على النقاط الرئيسية والتعليقات المميزة لكل جولة. الهدف هو تقديم ملخص واضح ومحدد يساعد على فهم أداء كل شاعر في المنافسة.
-حدد في النهاية من انتصر في هذه المبارزة الشعرية
+انت محكم في مبارزة شعرية بين {poet1} و {poet2} تتمثل مهمتك في تقديم ملخص شامل ومفيد لكل جولة، يتضمن النقاط التي حصل عليها كل شاعر  و البيت الذي قام كل شاعر بتوليده في كل جولة وتعليقات حول الأداء في كل جولة. يُرجى تلخيص النتائج وتقديم نظرة عامة شاملة عن الأداء الإجمالي لكل شاعر.
 <</SYS>>
-
+عدد الجولات: {len(round_scores["poet1"])}
 الأبيات الذي قام الشاعر {poet1} بتوليدها في كل جولة 
 {
     ''.join([f"{NUMBER_TO_ORDINAL[i+1]}-{verse}\n" for i, verse in enumerate(round_verses["poet1"])])
@@ -126,6 +128,8 @@ The input block will always be a json string:
 {
     ''.join([f"{NUMBER_TO_ORDINAL[i+1]}-{comment}\n" for i, comment in enumerate(round_comments["poet2"])])
 }
+حصل الشاعر {poet1} علي مجموع نقاط {poet1_total_score}
+حصل الشاعر {poet2} علي مجموع نقاط {poet2_total_score}
 [/INST]
 """
       return summarizer_prompt
@@ -293,7 +297,7 @@ Remember Give me only the score in the output format specified. Don't give me an
 
         return comment + qafya_comment, gpt_comment, comment, scores 
       else:
-        return comment + qafya_comment
+        return comment + ' ' +  qafya_comment
 
     def summarize(self, poet1, poet2, round_verses, round_scores, round_comments):
        summary_prompt = self._prepare_summarizer_prompt(poet1, poet2, round_verses, round_scores, round_comments)

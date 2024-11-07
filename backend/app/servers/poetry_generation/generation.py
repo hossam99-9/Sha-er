@@ -15,7 +15,7 @@ async def generate(websocket,
                    ):
 
   log_message(msg=f"Prompt: {prompt}", level=2)
-  bait = generator_agent.generate_bait(prompt)
+  bait, letter = generator_agent.generate_bait(prompt)
 
   log_message(msg="Agent generated the bait", level=2)
   log_message(msg=f"bait: {bait}", level=1)

@@ -7,8 +7,8 @@ class PoetryCriticAgent(BaseAgent):
     def _prepare_critic_prompt(self, bait):
       critic_prompt = """
       <s> [INST]<<SYS>>
-      أنت ناقد للشعر العربي و دورك أن تنقد البيت بناء علي اختيار الكلمات و المعني و الأسلوب.
-      سأعطيك بيت شعر و أنت تعطيني نقد منظم للبيت
+      أنت محلل للشعر العربي و دورك أن تحلل البيت بناء علي اختيار الكلمات و المعني و الأسلوب.
+      سأعطيك بيت شعر و أنت تعطيني نحليل منظم للبيت
       The INST block will always be a json string:
       {
           "prompt": {البيت}
