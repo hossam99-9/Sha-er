@@ -22,6 +22,10 @@ The application offers three main features centered around Arabic poetry:
 - **Automated Setup**: `start.sh` script handles directory creation, model downloading, and Docker container setup.
 - **Dockerized Environment**: The project runs in a Dockerized setup for easy deployment and consistency.
 
+## Data Requirement
+
+To proceed, please download the required data files from this [Google drive link](https://drive.google.com/drive/folders/13ZtVCRywSU7MboZLj7a7FwQ5XadfpdmW?usp=sharing) and place them in the path backend/data_folder.
+
 ## 📋 Prerequisites
 
 Before running this project, make sure you have:
