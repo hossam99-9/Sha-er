@@ -65,4 +65,24 @@ Before running this project, make sure you have:
     npm ci
     npm run start
     ```
+## Demos
+
+1. **📜 Arabic Poetry Generation**: 
+
+<video width="854" height="480" controls>
+    <source src="./Demos/generation_allam.mp4" type="video/mp4">
+</video>
+    
+2. **🔍 Poetry Analysis and Critique**: 
+
+<video width="854" height="480" controls>
+    <source src="./Demos/analysis_allam.mp4" type="video/mp4">
+</video>
+
+3. **⚔️ Poetic Debate**:
+
+<video width="854" height="480" controls>
+    <source src="./Demos/debate-allam.mp4" type="video/mp4">
+</video>
+
 ---
