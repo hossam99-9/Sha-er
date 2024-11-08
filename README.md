@@ -69,20 +69,25 @@ Before running this project, make sure you have:
 
 1. **📜 Arabic Poetry Generation**: 
 
-<video width="854" height="480" controls>
+[<video width="854" height="480" controls>
     <source src="./Demos/generation_allam.mp4" type="video/mp4">
-</video>
+</video>](https://github.com/user-attachments/assets/7206865e-f83d-4611-8755-6fd836c11451
+)
     
 2. **🔍 Poetry Analysis and Critique**: 
 
-<video width="854" height="480" controls>
-    <source src="./Demos/analysis_allam.mp4" type="video/mp4">
-</video>
+
+
+https://github.com/user-attachments/assets/6743ddc5-8e3e-47ea-9c0e-f4b09ebdc12a
+
+
 
 3. **⚔️ Poetic Debate**:
 
-<video width="854" height="480" controls>
-    <source src="./Demos/debate-allam.mp4" type="video/mp4">
-</video>
+
+
+https://github.com/user-attachments/assets/3bc8e2c3-fcbc-4ae0-acfa-deb442c55abe
+
+
 
 ---
