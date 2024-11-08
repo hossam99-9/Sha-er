@@ -5,10 +5,8 @@ from backend.app.models.llm_model import LLMModel
 
 rhetorical_parameters = {
     GenTextParamsMetaNames.MAX_NEW_TOKENS: 900,
-    GenTextParamsMetaNames.DECODING_METHOD: "greedy",
 		GenTextParamsMetaNames.REPETITION_PENALTY: 1,
-    GenTextParamsMetaNames.TEMPERATURE: 0.5,
-
+    GenTextParamsMetaNames.TEMPERATURE: 0.4,
 }
 
 llm = LLMModel(rhetorical_parameters)
