@@ -16,6 +16,10 @@ def normalize_char(char):
     char = char.replace('n/', '   ')
     char = char.replace('n//', '   ')
     char = char.replace('n\\','   ')
+    char = char.replace('n','   ')
+    char = char.replace('\\','   ')
+    char = char.replace('/','   ')
+    char = char.replace('//','   ')
     return char
 
 async def fallback(websocket, poet_key):
@@ -47,7 +51,7 @@ async def send_verse_stream(websocket, poet_key, verse):
            else:
               continue
         else:
-            if char.endswith('"'):
+            if '"' in char:
               return full_bait
             else:
               char=normalize_char(char)
