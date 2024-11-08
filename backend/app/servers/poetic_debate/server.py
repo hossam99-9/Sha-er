@@ -84,7 +84,7 @@ generator_agent = PoetryGenerationAgent(generator_llm_model=generator_llm,
                                         themes_list=THEMES,
                                         poetry_database_path = Config.ASHAAR_DATA_PATH)
 # WebSocket endpoint
-@app.websocket("/wss/battle")
+@app.websocket("/ws/battle")
 async def websocket_endpoint(
     websocket: WebSocket,
     poet1: str = Query(...),

@@ -585,9 +585,11 @@ Remember give me only the JSON output. Don't add any exaplanation or any thing e
         return generated_bait, data["poem_qafya_letter"]
     
     def generate_bait_stream(self, user_prompt):
-        data= self.fetch_relevant_poems_with_metadata(user_prompt=user_prompt)
+        data, success = self.fetch_relevant_poems_with_metadata(user_prompt=user_prompt)
+        if success == False:
+            return "يرجي اتباع الدليل الموضح" , {}
         generation_prompt = self._create_generation_prompt(data=data)
-        return self.generator_llm_model.generate_stream(generation_prompt)
+        return self.generator_llm_model.generate_stream(generation_prompt), data["poem_qafya_letter"]
 
     def handle_request(self, user_prompt):
         return self.generate_poem(user_prompt=user_prompt)

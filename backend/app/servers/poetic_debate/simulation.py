@@ -7,10 +7,58 @@ from colorama import Fore, Style
 
 from backend.app.utils.debate import *
 
-async def send_verse(websocket, poet_key, verse):
+def normalize_char(char):
+
+    char = char.replace('\\n', '   ')
+    char = char.replace('\n', '   ')
+    char = char.replace('/n', '   ')
+    char = char.replace('//n', '   ')
+    char = char.replace('n/', '   ')
+    char = char.replace('n//', '   ')
+    char = char.replace('n\\','   ')
+    return char
+
+async def fallback(websocket, poet_key):
+    verse=random.choice([
+       "وَلِلصُبْحِ في أُفقِ السَماءِ مَرَائِمٌ يُبَدِدُها وَالليلُ لِلغَيمِ لِثامُ",
+       "في حُسنِكَ ما يَستَبي الحَليمُ وَيَرتاحُ لِلَّهوِ القَديمُ",
+       "في قَدِّهِ ما هُوَ في الأَغصانِ عَلى اِختِلافِ الوَضِعِ وَالمَباني",
+       "في هَجْرِها ذُقْتُ المَنُونَ ولَمْ أَقُلْ أَحْبَابَنَا طَالَ اللّيَالِيَ بَعِّدُونَا",
+       "يا مَن تَجَنَّبَني وَاِستَخَفَّ بِحُبِّهِ اِبكِ عَلى كُلِّ حُبٍّ فَلا اِلتِفاتُهُ",
+       "بِأَبي وَأُمّي ذاكَ الغُلامُ فَإِنَّهُ خَيرُ الأَنامِ جَمالاً وَخُلقاً مُحَلَّها"
+    ])
+    await asyncio.sleep(2)
     for char in verse:
         await websocket.send_text(json.dumps({poet_key: char}))
-        await asyncio.sleep(0.1)  # Simulate slow processing
+        await asyncio.sleep(0.01)  # Simulate slow processing
+    return verse
+
+async def send_verse_stream(websocket, poet_key, verse):
+    flag_start_token=False
+    full_bait=""
+    memory=""
+    for char in verse:
+        if not flag_start_token:
+           if char == '"' or char == 'verse' or char == '":' or char == ' "':
+              memory+=char
+              if memory=='"verse": "':
+                flag_start_token=True
+                memory=""
+           else:
+              continue
+        else:
+            if char.endswith('"'):
+              return full_bait
+            else:
+              char=normalize_char(char)
+              await websocket.send_text(json.dumps({poet_key: char}))
+              full_bait+=char
+    return full_bait
+
+async def send_verse(websocket, poet_key,verse):
+    for char in verse:
+        await websocket.send_text(json.dumps({poet_key: char}))
+        await asyncio.sleep(0.01)  # Simulate slow processing
 
 async def send_judge_comment(websocket, comment):
     await websocket.send_text(json.dumps({"Judge": comment}))
@@ -83,29 +131,27 @@ async def run_simulation(websocket,
     # results_2, _ = generator_agent.fetch_relevant_poems_with_metadata(POET2_PROMPTS[round])
     # log_message(msg="Fetched verses for the two competitors",level=2)
 
-    poet1_bait, qafya_letter_1 = generator_agent.generate_bait(POET1_PROMPTS[round])
-    poet2_bait, qafya_letter_2 = generator_agent.generate_bait(POET2_PROMPTS[round])
-
-    ROUND_VERSES["poet1"].append(poet1_bait)
-    ROUND_VERSES["poet2"].append(poet2_bait)
-
-    log_message(msg="Each competitor generated his bait", level=2)
-    log_message(msg=Fore.BLUE + f"الشاعر الأول: {poet1_bait}" + Style.RESET_ALL, level=1)
-    log_message(msg=Fore.BLUE + f"الشاعر الثاني: {poet2_bait}" + Style.RESET_ALL, level=1)
-
+    poet1_bait, qafya_letter_1 = generator_agent.generate_bait_stream(POET1_PROMPTS[round])
+    poet2_bait, qafya_letter_2 = generator_agent.generate_bait_stream(POET2_PROMPTS[round])
     # Send verses character by character
-    await send_verse(websocket, "poet1", poet1_bait + '\n')
-    await asyncio.sleep(2)  # Pause between verses
-    await send_verse(websocket, "poet2", poet2_bait + '\n')
-    await asyncio.sleep(2)  # Pause between verses
-
-    json_response = {'poet1':poet1_bait,'poet2':poet2_bait}
+    full_bait_poet1 = await send_verse_stream(websocket, "poet1", poet1_bait )
+    if full_bait_poet1=="":
+       full_bait_poet1 = await fallback(websocket,"poet1")
+    full_bait_poet2 = await send_verse_stream(websocket, "poet2", poet2_bait )
+    if full_bait_poet2=="":
+       full_bait_poet2 = await fallback(websocket,"poet2")
+    log_message(msg="Each competitor generated his bait", level=2)
+    log_message(msg=Fore.BLUE + f"الشاعر الأول: {full_bait_poet1}" + Style.RESET_ALL, level=1)
+    log_message(msg=Fore.BLUE + f"الشاعر الثاني: {full_bait_poet2}" + Style.RESET_ALL, level=1)
+    ROUND_VERSES["poet1"].append(full_bait_poet1)
+    ROUND_VERSES["poet2"].append(full_bait_poet2)
+    json_response = {'poet1':full_bait_poet1,'poet2':full_bait_poet2}
 
     log_message(msg="Judge starting evaluation", level=2)
 
     # Evaluating scores
-    round_scores_1 = judge_agent.score(poet1_bait, qafya_letter_1)
-    round_scores_2 = judge_agent.score(poet2_bait, qafya_letter_2)
+    round_scores_1 = judge_agent.score(full_bait_poet1, qafya_letter_1)
+    round_scores_2 = judge_agent.score(full_bait_poet2, qafya_letter_2)
 
     log_message(msg="Judge calculated scores", level=2)
     log_message(msg=f"Competitor1: qafya_score: {round_scores_1["qafya_score"]}, meters_score: {round_scores_1["meters_score"]}, quality_score: {round_scores_1["quality_score"]}", level=2)
@@ -115,14 +161,14 @@ async def run_simulation(websocket,
     ROUND_SCORES["poet2"].append(round_scores_2["round_score"])
 
     if Config.EVALUATION_MODE:
-      judge_comment1, gpt_comment1, allam_comment1, scores1 = judge_agent.comment(poet1_bait, round_scores_1["qafya_score"])
-      judge_comment2, gpt_comment2, allam_comment2, scores2 = judge_agent.comment(poet2_bait, round_scores_2["qafya_score"])
+      judge_comment1, gpt_comment1, allam_comment1, scores1 = judge_agent.comment(full_bait_poet1, round_scores_1["qafya_score"])
+      judge_comment2, gpt_comment2, allam_comment2, scores2 = judge_agent.comment(full_bait_poet2, round_scores_2["qafya_score"])
       row_data = [str(round+1), gpt_comment1, gpt_comment2, allam_comment1, allam_comment2," ", " ", scores1, scores2," "]
       add_row(row_data, log_file)
 
     else:
-      judge_comment1 = judge_agent.comment(poet1_bait, round_scores_1["qafya_score"])
-      judge_comment2 = judge_agent.comment(poet2_bait, round_scores_2["qafya_score"])
+      judge_comment1 = judge_agent.comment(full_bait_poet1, round_scores_1["qafya_score"])
+      judge_comment2 = judge_agent.comment(full_bait_poet2, round_scores_2["qafya_score"])
 
     await send_judge_comment(websocket, f"الحكم للشاعر {poet1}: {judge_comment1}" +'\n'+f"الحكم للشاعر {poet2}: {judge_comment2}" + '\n')
 
