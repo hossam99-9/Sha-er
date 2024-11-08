@@ -5,24 +5,28 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow as tf
 
-import keras
-
 from backend.app.config.config import Config
 
-
-vocab = list('إةابتثجحخدذرزسشصضطظعغفقكلمنهويىأءئؤ#آ ') + list('ًٌٍَُِّ') +['ْ']+['ٓ']
-
+# Define the vocabulary and mapping from characters to indices
+vocab = list('إةابتثجحخدذرزسشصضطظعغفقكلمنهويىأءئؤ#آ ') + list('ًٌٍَُِّ') + ['ْ'] + ['ٓ']
 BOHOUR_NAMES_AR = [
     "السريع", "الكامل", "المتقارب", "المتدارك", "المنسرح", "المديد", 
     "المجتث", "الرمل", "البسيط", "الخفيف", "الطويل", "الوافر", 
     "الهزج", "الرجز", "المضارع", "المقتضب", "نثر"
 ]
-
 label2name = BOHOUR_NAMES_AR
-
-char2idx = {u: i+1 for i, u in enumerate(vocab)}
+char2idx = {u: i + 1 for i, u in enumerate(vocab)}
 
 class TransformerBlock(layers.Layer):
+    """
+    Transformer block layer implementation.
+
+    :param embed_dim: Embedding dimension.
+    :param num_heads: Number of attention heads.
+    :param ff_dim: Hidden layer size in feed forward network inside transformer.
+    :param rate: Dropout rate.
+    :param training: Whether the model is in training mode.
+    """
     def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1, training=True):
         super(TransformerBlock, self).__init__()
         self.training = training
@@ -47,6 +51,13 @@ class TransformerBlock(layers.Layer):
         return self.layernorm2(out1 + ffn_output)
 
 class TokenAndPositionEmbedding(layers.Layer):
+    """
+    Token and position embedding layer implementation.
+
+    :param maxlen: Maximum length of the input sequence.
+    :param vocab_size: Size of the vocabulary.
+    :param embed_dim: Embedding dimension.
+    """
     def __init__(self, maxlen, vocab_size, embed_dim):
         super(TokenAndPositionEmbedding, self).__init__()
         self.token_emb = layers.Embedding(input_dim=vocab_size, output_dim=embed_dim)
@@ -57,9 +68,15 @@ class TokenAndPositionEmbedding(layers.Layer):
         positions = tf.range(start=0, limit=maxlen, delta=1)
         positions = self.pos_emb(positions)
         x = self.token_emb(x)
-        return x
+        return x + positions
 
 def create_transformer_model(training=False):
+    """
+    Create a transformer-based model for meter prediction.
+
+    :param training: Whether the model is in training mode.
+    :return: The compiled transformer model.
+    """
     embed_dim = 64  # Embedding size for each token
     num_heads = 3  # Number of attention heads
     ff_dim = 64  # Hidden layer size in feed forward network inside transformer
@@ -80,6 +97,12 @@ def create_transformer_model(training=False):
     return model
 
 def preprocess(input: str):
+    """
+    Preprocess the input text for the model.
+
+    :param input: The input text.
+    :return: The preprocessed input as a numpy array.
+    """
     x = [[char2idx.get(char, 0) for char in input]]
     x = pad_sequences(x, padding='post', value=0, maxlen=128)
     return np.array(x)
@@ -90,6 +113,12 @@ model = create_transformer_model(training=False)
 model.load_weights(checkpoint_path)
 
 def predict_meter(bait: str):
+    """
+    Predict the meter of the given bait (verse).
+
+    :param bait: The verse to be analyzed.
+    :return: The predicted meter.
+    """
     processed_bait = preprocess(bait)
     logit = model.predict(processed_bait)
     meter_index = logit.argmax(-1)[0]
